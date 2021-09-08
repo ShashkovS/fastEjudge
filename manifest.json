@@ -1,0 +1,28 @@
+{
+  "name": "fastEjudge",
+  "description": "Улучшение интерфейса проверки задач в ejudge",
+  "version": "1.0.3",
+  "manifest_version": 3,
+  "permissions": ["activeTab", "scripting"],
+  "content_scripts": [
+    {
+      "matches": ["https://server.179.ru/cgi-bin/new-master?*", "https://server.179.ru/cgi-bin/new-judge?*"],
+      "js": ["highlight.pack.js", "content-script.js"],
+      "css": ["highlight.pack.idea.css"]
+    }
+  ],
+  "action": {
+    "default_icon": {
+      "16": "/images/get_started16.png",
+      "32": "/images/get_started32.png",
+      "48": "/images/get_started48.png",
+      "128": "/images/get_started128.png"
+    }
+  },
+  "icons": {
+    "16": "/images/get_started16.png",
+    "32": "/images/get_started32.png",
+    "48": "/images/get_started48.png",
+    "128": "/images/get_started128.png"
+  }
+}
