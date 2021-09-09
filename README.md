@@ -2,7 +2,7 @@
 
 
 ### Подключение
-Собственно вот расширение: [fastEjudge.crx](https://github.com/ShashkovS/fastEjudge/blob/main/fastEjudge.crx?raw=true)
+Собственно вот расширение: [fastEjudge.crx](https://github.com/ShashkovS/fastEjudge/blob/main/dist/fastEjudge.crx?raw=true)
 Нужно drag'n'drop'нуть его на вкладку с расширениями.
 
 

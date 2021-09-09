@@ -1,7 +1,7 @@
 {
-  "name": "fastEjudge",
-  "description": "Улучшение интерфейса проверки задач в ejudge",
-  "version": "1.0.3",
+  "name": "Модификатор ejudge",
+  "description": "Улучшение ejudge",
+  "version": "1.0.2",
   "manifest_version": 3,
   "permissions": ["activeTab", "scripting"],
   "content_scripts": [
