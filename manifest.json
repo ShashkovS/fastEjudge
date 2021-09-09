@@ -1,13 +1,13 @@
 {
   "name": "Модификатор ejudge",
   "description": "Улучшение ejudge",
-  "version": "1.0.2",
+  "version": "1.0.5",
   "manifest_version": 3,
   "permissions": ["activeTab", "scripting"],
   "content_scripts": [
     {
       "matches": ["https://server.179.ru/cgi-bin/new-master?*", "https://server.179.ru/cgi-bin/new-judge?*"],
-      "js": ["highlight.pack.js", "content-script.js"],
+      "js": ["highlight.min.js", "content-script.js"],
       "css": ["highlight.pack.idea.css"]
     }
   ],
