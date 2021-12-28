@@ -1,7 +1,7 @@
 // browser://extensions/
 
 /**
-Как сообрать highlight.js
+ Как собрать highlight.js
  Клонируем https://github.com/highlightjs/highlight.js.git
  Ставим либы: npm ci
  Собираем под нужные языки (см. https://highlightjs.readthedocs.io/en/latest/building-testing.html#building)
@@ -76,7 +76,7 @@ function highlightCode() {
   if (code) {
     const text = code.innerText.replace(/^(?:\[\d+\]\n)*\t/, '');
     const pre = document.createElement('pre');
-    pre.innerHTML = hljs.highlight('python', text).value;
+    pre.innerHTML = hljs.highlight(text, {language: 'python', ignoreIllegals: true}).value;
     pre.style = "font-size:150%";
     code.parentNode.replaceChild(pre, code);
   }
@@ -125,7 +125,7 @@ function processSolutionTd(solTd, thisRun, SID) {
       // else if (lang === 'node') lang = 'javascript';
       // else if (lang === 'rust') lang = 'rust';
       else lang = 'python';
-      pre.innerHTML = hljs.highlight(lang, code).value;
+      pre.innerHTML = hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
       // pre.style = "font-size:150%";
       solTd.innerText = '';
       solTd.appendChild(pre);
