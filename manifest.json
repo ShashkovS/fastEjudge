@@ -1,9 +1,9 @@
 {
   "name": "Модификатор ejudge",
   "description": "Улучшение ejudge",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "manifest_version": 3,
-  "permissions": ["activeTab", "scripting"],
+  "permissions": [],
   "content_scripts": [
     {
       "matches": ["https://*/cgi-bin/new-master?*", "https://*/cgi-bin/new-judge?*"],
