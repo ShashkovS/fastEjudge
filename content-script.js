@@ -114,7 +114,7 @@ function parseRunsTable(runsTable) {
 
 function processSolutionTd(solTd, thisRun, SID) {
   solTd.innerText = 'loading...';
-  solTd.style = "max-width: 50%";
+  // solTd.style = "max-width: 50%";
   fetch(`/cgi-bin/new-judge?SID=${SID}&action=91&run_id=${thisRun["Run ID"]}`)
     .then(response => response.text())
     .then(code => {
@@ -126,7 +126,7 @@ function processSolutionTd(solTd, thisRun, SID) {
       // else if (lang === 'rust') lang = 'rust';
       else lang = 'python';
       pre.innerHTML = hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
-      // pre.style = "font-size:150%";
+      pre.style = "overflow-x: auto; overflow-y: hidden; max-width: 50vw; border-left: 4px solid #005282; padding-left: 7px; margin-top: -2px;";
       solTd.innerText = '';
       solTd.appendChild(pre);
     })
@@ -143,7 +143,7 @@ function getListOfProblemNames() {
 }
 
 function processCommentAreaTd(comTd) {
-  comTd.style = "width: 40%";
+  comTd.style = "max-width: 30%; width: 25rem;";
   const commentArea = document.createElement("textarea");
   commentArea.style = "width: 100%";
   commentArea.rows = 7;
@@ -228,7 +228,7 @@ function addTableOfRuns(runsTable, addAfterElement) {
   const SID = window.location.href.match(/SID=(\w+)/)[1];
   // Создаём таблицу решений
   const solsTable = document.createElement('table');
-  solsTable.style = "width: 100%";
+  solsTable.style = "width: 100%; border-collapse: collapse;";
   for (const thisRun of runsToAdd) {
     // Создаём строчку с копией строчки из таблицы посылок
     const rowHd = document.createElement("tr");
@@ -239,13 +239,14 @@ function addTableOfRuns(runsTable, addAfterElement) {
     solsTable.appendChild(rowHd);
     // Создаём строчку с элементами управления
     const rowWithCode = document.createElement("tr");
+    rowWithCode.style = "vertical-align: top; border-bottom: 1pt solid #005282;";
     const solTd = document.createElement("td");
     processSolutionTd(solTd, thisRun, SID);
     const comTd = document.createElement("td");
     const commentArea = processCommentAreaTd(comTd);
     const butTd = document.createElement("td");
     processButtonsTd(butTd, thisRun["Run ID"], commentArea, SID);
-    [solTd, comTd, butTd].forEach(el => rowWithCode.appendChild(el));
+    [comTd, butTd, solTd].forEach(el => rowWithCode.appendChild(el));
     solsTable.appendChild(rowWithCode);
   }
   runsTable.parentNode.insertBefore(solsTable, runsTable.nextSibling);
