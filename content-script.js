@@ -71,6 +71,7 @@ function makeTablesSortable() {
   })));
 }
 
+
 function highlightCode() {
   const code = document.getElementById('prog');
   if (code) {
@@ -112,6 +113,22 @@ function parseRunsTable(runsTable) {
   return runsToAdd;
 }
 
+const ejudge2hljs = {
+  'gcc': 'c',
+  'g++': 'cpp',
+  'javac': 'java',
+  'mcs': 'csharp',
+  'ruby': 'ruby',
+  'php': 'php',
+  'python3': 'python',
+  'gccgo': 'go',
+  'pasabc-linux': 'delphi',
+  'rust': 'rust',
+  'kotlin': 'kotlin',
+  'node': 'javascript',
+};
+
+
 function processSolutionTd(solTd, thisRun, SID) {
   solTd.innerText = 'loading...';
   // solTd.style = "max-width: 50%"; // This might conflict with image/code styles, can be removed
@@ -145,15 +162,10 @@ function processSolutionTd(solTd, thisRun, SID) {
         // Otherwise, assume it's text and process it for highlighting.
         return response.text().then(code => {
           const pre = document.createElement('pre');
-          let lang = thisRun["Language"];
-          if (lang === 'g++') lang = 'cpp';
-          else if (lang === 'python3') lang = 'python';
-          else lang = 'python'; // Default fallback
-
+          pre.classList.add('hljs');
+          const lang = ejudge2hljs[thisRun["Language"]] || 'python';
           pre.innerHTML = hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
           pre.style = "overflow-x: auto; overflow-y: hidden; max-width: 50vw; border-left: 4px solid #005282; padding-left: 7px; margin-top: -2px;";
-
-          // Clear the "loading..." text and append the highlighted code
           solTd.innerText = '';
           solTd.appendChild(pre);
         });
