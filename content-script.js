@@ -114,23 +114,55 @@ function parseRunsTable(runsTable) {
 
 function processSolutionTd(solTd, thisRun, SID) {
   solTd.innerText = 'loading...';
-  // solTd.style = "max-width: 50%";
+  // solTd.style = "max-width: 50%"; // This might conflict with image/code styles, can be removed
   fetch(`/cgi-bin/new-judge?SID=${SID}&action=91&run_id=${thisRun["Run ID"]}`)
-    .then(response => response.text())
-    .then(code => {
-      const pre = document.createElement('pre');
-      let lang = thisRun["Language"];
-      if (lang === 'g++') lang = 'cpp';
-      else if (lang === 'python3') lang = 'python';
-      // else if (lang === 'node') lang = 'javascript';
-      // else if (lang === 'rust') lang = 'rust';
-      else lang = 'python';
-      pre.innerHTML = hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
-      pre.style = "overflow-x: auto; overflow-y: hidden; max-width: 50vw; border-left: 4px solid #005282; padding-left: 7px; margin-top: -2px;";
-      solTd.innerText = '';
-      solTd.appendChild(pre);
+    .then(response => {
+      // First, check if the response is OK.
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Check the Content-Type header to decide how to process the response.
+      const contentType = response.headers.get('content-type');
+
+      if (contentType && contentType.startsWith('image/')) {
+        // --- HANDLE IMAGE ---
+        // If it's an image, process the response body as a Blob.
+        return response.blob().then(imageBlob => {
+          const imageUrl = URL.createObjectURL(imageBlob);
+          const img = document.createElement('img');
+          img.src = imageUrl;
+          img.style.maxWidth = '100%'; // As requested
+          img.style.display = 'block'; // Good practice for max-width to work well
+
+          // Clear the "loading..." text and append the image
+          solTd.innerText = '';
+          solTd.appendChild(img);
+        });
+
+      } else {
+        // --- HANDLE CODE ---
+        // Otherwise, assume it's text and process it for highlighting.
+        return response.text().then(code => {
+          const pre = document.createElement('pre');
+          let lang = thisRun["Language"];
+          if (lang === 'g++') lang = 'cpp';
+          else if (lang === 'python3') lang = 'python';
+          else lang = 'python'; // Default fallback
+
+          pre.innerHTML = hljs.highlight(code, {language: lang, ignoreIllegals: true}).value;
+          pre.style = "overflow-x: auto; overflow-y: hidden; max-width: 50vw; border-left: 4px solid #005282; padding-left: 7px; margin-top: -2px;";
+
+          // Clear the "loading..." text and append the highlighted code
+          solTd.innerText = '';
+          solTd.appendChild(pre);
+        });
+      }
     })
-    .catch(error => solTd.innerText = error.toString());
+    .catch(error => {
+        console.error("Error fetching solution:", error);
+        solTd.innerText = error.toString();
+    });
 }
 
 function getListOfProblemNames() {
