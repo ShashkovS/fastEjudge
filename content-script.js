@@ -469,16 +469,19 @@ function renderLine(solTd, prefix, text, color) {
 
 function renderDiff(solTd, diff, previousRun, previousProblem, oldCode, newCode, language) {
   solTd.innerText = '';
-  solTd.style = 'max-width: 50vw; overflow-x: auto;';
+  solTd.style = 'max-width: 50vw;';
   const title = document.createElement('div');
   title.style = 'font-family: sans-serif; font-size: 0.85em; color: #666; margin: 0.1rem 0 0.35rem;';
   title.textContent = `Изменения относительно посылки ${previousRun.runId} по задаче ${previousProblem}:`;
   solTd.appendChild(title);
 
+  const scrollArea = document.createElement('div');
+  scrollArea.style = 'max-width: 50vw; overflow-x: auto;';
+  solTd.appendChild(scrollArea);
   const diffBody = document.createElement('div');
   diffBody.classList.add('hljs');
-  diffBody.style = 'border-left: 4px solid #005282; font-family: monospace; padding: 0;';
-  solTd.appendChild(diffBody);
+  diffBody.style = 'border-left: 4px solid #005282; font-family: monospace; padding: 0; width: max-content; min-width: 100%; box-sizing: border-box;';
+  scrollArea.appendChild(diffBody);
   const visible = new Set();
   diff.forEach((entry, index) => {
     if (entry.kind === 'same') return;
@@ -807,6 +810,7 @@ function fetchEjudge(SID, run_id, action, msg_text = null) {
   // action_241: Just OK the run
   // action_237: Send run comment and OK run
   // action_238: Send run comment and REJECT run
+  // action_242: Just SUMMON the run
   let details;
   if (action === 'OK') {
     details = {
@@ -839,6 +843,12 @@ function fetchEjudge(SID, run_id, action, msg_text = null) {
       'action': 67, // disqualify or may be set this status...
       'status': 10, // ???
     };
+  } else if (action === 'SUMMON') {
+    details = {
+      SID,
+      run_id,
+      'action_242': 'Just SUMMON the run',
+    };
   } else {
     throw `Wrong action ${action}`;
   }
@@ -853,13 +863,14 @@ function fetchEjudge(SID, run_id, action, msg_text = null) {
   });
 }
 
-function processButtonsTd(butTd, run_id, commentArea, SID) {
+function processButtonsTd(butTd, run_id, commentArea, SID, runTr) {
   butTd.style = "width: 10%";
   for (const butObj of [
     {text: "Just OK", onclick: () => fetchEjudge(SID, run_id, 'OK')},
     {text: "Comment&OK", onclick: () => fetchEjudge(SID, run_id, 'OK', commentArea.value)},
     {text: "Reject", onclick: () => fetchEjudge(SID, run_id, 'REJECT', commentArea.value)},
     {text: "DQ", onclick: () => fetchEjudge(SID, run_id, 'DISQUALIFY')},
+    {text: "Just SUMMON", onclick: () => fetchEjudge(SID, run_id, 'SUMMON')},
     {text: "★★★", onclick: () => fetchEjudge(SID, run_id, 'OK', '★★★ 😄')},
     {text: "★★", onclick: () => fetchEjudge(SID, run_id, 'OK', '★★ 🙂')},
     {text: "★", onclick: () => fetchEjudge(SID, run_id, 'OK', '★ 🤢')},
@@ -876,6 +887,7 @@ function processButtonsTd(butTd, run_id, commentArea, SID) {
             .catch(error => {
               console.error(error);
               newBut.style.background = "#f44336";
+              newBut.title = String(error);
             });
     };
     butTd.appendChild(newBut);
@@ -905,7 +917,7 @@ function addTableOfRuns(runsTable, addAfterElement) {
     const comTd = document.createElement("td");
     const commentArea = processCommentAreaTd(comTd);
     const butTd = document.createElement("td");
-    processButtonsTd(butTd, thisRun["Run ID"], commentArea, SID);
+    processButtonsTd(butTd, thisRun["Run ID"], commentArea, SID, thisRun['tr']);
     [comTd, butTd, solTd].forEach(el => rowWithCode.appendChild(el));
     solsTable.appendChild(rowWithCode);
 
